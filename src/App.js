@@ -41,7 +41,7 @@ export default function App() {
             <div className="block md:flex w-screen">
               <Routes>
                 <Route path="document" element={<Document_Sidebar />} />
-                <Route index element={<Sidebar />} />
+                <Route path="*" element={<Sidebar />} />
               </Routes>
 
               <div className="max-w-full overflow-hidden">
