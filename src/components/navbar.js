@@ -1,18 +1,15 @@
-import {
-  Download,
-  DownloadDone,
-  FileDownloadDone,
-  Scale,
-  Search,
-  Upload,
-} from "@mui/icons-material";
-import logo from "../assets/Untitled.png";
-import { purple } from "@mui/material/colors";
-import { useState } from "react";
+import { Download, FileDownloadDone, Search } from '@mui/icons-material';
+import logo from '../assets/Untitled.png';
+import { purple } from '@mui/material/colors';
+import { useState } from 'react';
+import { auth } from '../App';
+import { Button } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [dropDownShown, setDropDownShown] = useState(false);
-
+  var navigate = useNavigate();
+  var currentUser = auth.currentUser;
   return (
     <>
       <div class="inline-flex items-center justify-between w-full h-full p-2 rounded-md text-gray-700 focus:outline-none transition duration-500 ease-in-out shadow">
@@ -26,20 +23,29 @@ export default function Navbar() {
         <div className="flex">
           <NavItem
             icon={<FileDownloadDone sx={{ color: purple[800] }} />}
-            text={"Tài liệu đã đăng"}
-            link={"#"}
+            text={'Tài liệu đã đăng'}
+            link={'#'}
           />
           <NavItem
             icon={<Download sx={{ color: purple[800] }} />}
-            text={"Tài liệu đã tải"}
-            link={"#"}
+            text={'Tài liệu đã tải'}
+            link={'#'}
           />
         </div>
-
-        <UserDropdown
-          dropDownShown={dropDownShown}
-          setDropDownShown={setDropDownShown}
-        />
+        {currentUser != null ? (
+          <UserDropdown
+            dropDownShown={dropDownShown}
+            setDropDownShown={setDropDownShown}
+          />
+        ) : (
+          <button
+            content="Đăng nhập"
+            className="bg-purple-500 rounded-2xl py-3 px-6 text-white"
+            onClick={() => navigate('/signin')}
+          >
+            Đăng nhập
+          </button>
+        )}
       </div>
     </>
   );
@@ -50,13 +56,13 @@ export function SearchBar() {
     <>
       <div className=" items-center rounded-3xl transition-all ease duration-500 hover:bg-purple-400 border-2 border-black whitespace-nowrap">
         <input
-          style={{ width: "40vw" }}
+          style={{ width: '40vw' }}
           className="px-4 py-2 rounded-3xl flex-grow focus:outline-none text-black"
           placeholder="Tìm kiếm tài liệu..."
         ></input>
         <Search
           fontSize="medium"
-          style={{ margin: "0 15px 0 15px" }}
+          style={{ margin: '0 15px 0 15px' }}
           className="text-black hover:text-white cursor-pointer"
         />
       </div>
@@ -92,7 +98,7 @@ export function UserDropdown({ dropDownShown, setDropDownShown }) {
           >
             <ul
               class={`p-2 w-40 z-50 border-r bg-white absolute rounded right-0 shadow top-0 mt-16 ${
-                dropDownShown ? "" : "hidden"
+                dropDownShown ? '' : 'hidden'
               }`}
             >
               <li class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-purple-700 focus:text-indigo-700 focus:outline-none">

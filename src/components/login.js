@@ -1,4 +1,8 @@
-import logo from "../assets/Untitled.png";
+import logo from '../assets/Untitled.png';
+import { useRef } from 'react';
+import { auth } from '../App';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 export function Logo() {
   return (
     <>
@@ -16,6 +20,23 @@ export function Logo() {
 }
 
 export default function Login() {
+  var emailRef = useRef(null);
+  var passwordRef = useRef(null);
+  var navigate = useNavigate();
+
+  async function submit() {
+    var email = emailRef.current.value;
+    var password = passwordRef.current.value;
+
+    try {
+      var user = await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
+      alert('Đăng nhập thành công\nChào mừng ' + user.user.email);
+    } catch (_) {
+      alert('Không tồn tại tài khoản trong hệ thống. Vui lòng đăng ký.');
+    }
+  }
+
   return (
     <>
       <body class="bg-white">
@@ -58,15 +79,20 @@ export default function Login() {
                 <div class="flex flex-col max-w-md space-y-5">
                   <input
                     type="text"
+                    ref={emailRef}
                     placeholder="Email"
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
                     type="text"
+                    ref={passwordRef}
                     placeholder="Password"
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
-                  <button class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">
+                  <button
+                    onClick={() => submit()}
+                    class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white"
+                  >
                     Đăng nhập
                   </button>
                   <div class="flex justify-center items-center">

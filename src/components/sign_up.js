@@ -1,4 +1,7 @@
-import logo from "../assets/Untitled.png";
+import { useRef } from 'react';
+import logo from '../assets/Untitled.png';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../App';
 export function Logo() {
   return (
     <>
@@ -16,6 +19,30 @@ export function Logo() {
 }
 
 export default function Sign_up() {
+  var emailRef = useRef(null);
+  var passwordRef = useRef(null);
+  var repasswordRef = useRef(null);
+
+  async function submit() {
+    var email = emailRef.current.value;
+    var password = passwordRef.current.value;
+    var repassword = repasswordRef.current.value;
+
+    if (password != repassword) {
+      alert('Mật khẩu không khớp');
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert(
+        `Tạo tài khoản bằng email ${email} thành công. Vui lòng đăng nhập.`
+      );
+    } catch (_) {
+      alert('Tài khoản đã tồn tại hoặc sai cú pháp.');
+    }
+  }
+
   return (
     <>
       <body class="bg-white">
@@ -59,19 +86,25 @@ export default function Sign_up() {
                   <input
                     type="text"
                     placeholder="Email"
+                    ref={emailRef}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
                     type="text"
                     placeholder="Password"
+                    ref={passwordRef}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
                     type="text"
                     placeholder="Nhập lại Password"
+                    ref={repasswordRef}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
-                  <button class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">
+                  <button
+                    onClick={() => submit()}
+                    class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white"
+                  >
                     Đăng kí
                   </button>
                   <div class="flex justify-center items-center">
