@@ -1,8 +1,8 @@
-import logo from '../assets/Untitled.png';
-import { useRef } from 'react';
-import { auth } from '../App';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import logo from "../assets/Untitled.png";
+import { useRef } from "react";
+import { auth } from "../App";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 export function Logo() {
   return (
     <>
@@ -30,10 +30,10 @@ export default function Login() {
 
     try {
       var user = await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
-      alert('Đăng nhập thành công\nChào mừng ' + user.user.email);
+      navigate("/");
+      alert("Đăng nhập thành công\nChào mừng " + user.user.email);
     } catch (_) {
-      alert('Không tồn tại tài khoản trong hệ thống. Vui lòng đăng ký.');
+      alert("Không tồn tại tài khoản trong hệ thống. Vui lòng đăng ký.");
     }
   }
 
@@ -51,7 +51,10 @@ export default function Login() {
                   Đăng nhập tài khoản ULIShare của bạn và tiếp tục sử dụng
                 </h1>
                 <p class="text-lg">Bạn chưa có tài khoản?</p>
-                <button class="inline-block flex-none px-4 py-3 borders-2 rounded-lg font-medium border-black bg-black text-white">
+                <button
+                  onClick={() => navigate("/signup")}
+                  class="inline-block flex-none px-4 py-3 borders-2 rounded-lg font-medium border-black bg-black text-white"
+                >
                   Tạo tài khoản tại đây
                 </button>
               </div>

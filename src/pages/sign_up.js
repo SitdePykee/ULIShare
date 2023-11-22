@@ -1,7 +1,8 @@
-import { useRef } from 'react';
-import logo from '../assets/Untitled.png';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../App';
+import { useRef } from "react";
+import logo from "../assets/Untitled.png";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../App";
+import { useNavigate } from "react-router";
 export function Logo() {
   return (
     <>
@@ -22,6 +23,7 @@ export default function Sign_up() {
   var emailRef = useRef(null);
   var passwordRef = useRef(null);
   var repasswordRef = useRef(null);
+  var navigate = useNavigate();
 
   async function submit() {
     var email = emailRef.current.value;
@@ -29,17 +31,15 @@ export default function Sign_up() {
     var repassword = repasswordRef.current.value;
 
     if (password != repassword) {
-      alert('Mật khẩu không khớp');
+      alert("Mật khẩu không khớp");
       return;
     }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert(
-        `Tạo tài khoản bằng email ${email} thành công. Vui lòng đăng nhập.`
-      );
+      navigate("/finish_sign_up");
     } catch (_) {
-      alert('Tài khoản đã tồn tại hoặc sai cú pháp.');
+      alert("Tài khoản đã tồn tại hoặc sai cú pháp.");
     }
   }
 
@@ -57,7 +57,10 @@ export default function Sign_up() {
                   Đăng kí tài khoản ULIShare của bạn để bắt đầu sử dụng
                 </h1>
                 <p class="text-lg">Bạn đã có tài khoản?</p>
-                <button class="inline-block flex-none px-4 py-3 borders-2 rounded-lg font-medium border-black bg-black text-white">
+                <button
+                  onClick={() => navigate("signin")}
+                  class="inline-block flex-none px-4 py-3 borders-2 rounded-lg font-medium border-black bg-black text-white"
+                >
                   Đăng nhập tại đây
                 </button>
               </div>
@@ -90,13 +93,13 @@ export default function Sign_up() {
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
-                    type="text"
-                    placeholder="Password"
+                    type="password"
+                    placeholder="Password (ít nhất 6 kí tự)"
                     ref={passwordRef}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
-                    type="text"
+                    type="password"
                     placeholder="Nhập lại Password"
                     ref={repasswordRef}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
