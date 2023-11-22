@@ -15,9 +15,14 @@ export default function Navbar() {
 
   return (
     <>
-      <div class="inline-flex items-center justify-between w-full h-full p-2 rounded-md text-gray-700 hover:text-purple-100 focus:outline-none transition duration-500 ease-in-out shadow">
+      <div class="inline-flex items-center justify-between w-full h-full p-2 rounded-md text-gray-700 focus:outline-none transition duration-500 ease-in-out shadow">
         <Logo />
-        <SearchBar />
+        <div className="w-full sm:hidden flex">
+          <SearchBar />
+        </div>
+        <div className="hidden lg:flex">
+          <SearchBar />
+        </div>
         <div className="flex">
           <NavItem
             icon={<FileDownloadDone sx={{ color: purple[800] }} />}
@@ -43,7 +48,7 @@ export default function Navbar() {
 export function SearchBar() {
   return (
     <>
-      <div className="lg:flex items-center rounded-3xl transition-all ease duration-500 hover:bg-purple-400 border-2 border-black hidden">
+      <div className=" items-center rounded-3xl transition-all ease duration-500 hover:bg-purple-400 border-2 border-black whitespace-nowrap">
         <input
           style={{ width: "40vw" }}
           className="px-4 py-2 rounded-3xl flex-grow focus:outline-none text-black"
@@ -66,7 +71,7 @@ export function Logo() {
         <img src={logo} className="w-1/5" />
         <p
           tabindex="0"
-          class="focus:outline-none text-base md:text-2xl font-bold text-purple-600 ml-3 "
+          class="focus:outline-none text-base md:text-2xl font-bold ml-3 "
         >
           ULIShare
         </p>
@@ -86,7 +91,7 @@ export function UserDropdown({ dropDownShown, setDropDownShown }) {
             // onClick={dropdownHandler(this)}
           >
             <ul
-              class={`p-2 w-40 border-r bg-white absolute rounded right-0 shadow top-0 mt-16 ${
+              class={`p-2 w-40 z-50 border-r bg-white absolute rounded right-0 shadow top-0 mt-16 ${
                 dropDownShown ? "" : "hidden"
               }`}
             >
@@ -201,7 +206,7 @@ export function NavItem({ icon, text, link }) {
     <>
       <a
         href={link}
-        class="hidden sm:flex whitespace-nowrap font-medium focus:text-purple-700 border-b-2 border-transparent focus:border-purple-700 px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-purple-100 hover:text-purple-800 focus:bg-gray-100 focus:outline-none transition duration-500 ease-in-out"
+        class="hidden sm:flex whitespace-nowrap font-medium focus:text-purple-700 border-b-2 border-transparent focus:border-purple-700 px-5 items-center py-6 text-sm leading-5 text-gray-700 hover:bg-purple-100 hover:text-purple-800 focus:bg-purple-100 focus:outline-none transition duration-500 ease-in-out"
       >
         <span class="mr-2">{icon}</span>
         {text}

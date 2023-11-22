@@ -2,15 +2,17 @@ import {
   CloudUploadOutlined,
   FileDownloadDoneOutlined,
   FileDownloadOutlined,
+  Search,
   StarBorderOutlined,
   Upload,
 } from "@mui/icons-material";
 import { purple } from "@mui/material/colors";
+import { SearchBar } from "./navbar";
 
 export default function Sidebar() {
   return (
     <>
-      <div className="bg-white h-screen md:block shadow-xl px-3 w-30 md:w-60 lg:w-72 overflow-x-hidden transition-transform duration-300 ease-in-out">
+      <div className="bg-white my-2 h-fit pb-16 md:h-screen md:block shadow-xl px-3 shrink-0 w-full md:w-72 transition-transform duration-300 ease-in-out">
         <Statistic />
         <Category />
       </div>
@@ -91,7 +93,7 @@ export function Link({ link, text }) {
     <>
       <a
         href={link}
-        class="text-sm font-medium text-gray-700 py-2 px-2 hover:bg-purple-500 hover:text-white rounded-md transition duration-150 ease-in-out"
+        class="text-sm font-medium text-gray-700 py-2 px-2 hover:bg-purple-500 focus:bg-purple-500 focus:text-white hover:text-white rounded-md transition duration-150 ease-in-out"
       >
         <span>{text}</span>
       </a>
