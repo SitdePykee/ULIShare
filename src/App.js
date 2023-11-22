@@ -1,9 +1,9 @@
 import Document_Sidebar from "./components/document_sidebar";
-import Login from "./components/login";
+import Login from "./pages/login";
 import Main from "./components/main";
 import Navbar from "./components/navbar";
 import Sidebar from "./components/sidebar";
-import Sign_up from "./components/sign_up";
+import Sign_up from "./pages/sign_up";
 import User from "./components/user";
 // import Sidebar from "./sidebar";
 
