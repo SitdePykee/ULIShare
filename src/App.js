@@ -13,6 +13,7 @@ import { getAnalytics } from "firebase/analytics";
 import { Rating, Typography } from "@mui/material";
 import { useState } from "react";
 import Finish_sign_up from "./pages/finish_sign_up";
+import UploadPage from "./components/upload";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDK1D_WaS5rVF2jWCzm_sw6wfd7KrLpHDY",
@@ -44,11 +45,11 @@ export default function App() {
                 <Route path="*" element={<Sidebar />} />
               </Routes>
 
-              <div className="max-w-full overflow-hidden">
+              <div className="max-w-full overflow-hidden flex-1 p-5">
                 <Routes>
                   <Route index element={Main()} />
                   <Route path="user/:id" element={User()} />
-                  <Route path="upload" />
+                  <Route path="upload" element={UploadPage()} />
                 </Routes>
               </div>
             </div>

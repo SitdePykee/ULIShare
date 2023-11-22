@@ -1,8 +1,9 @@
 import logo from "../assets/Untitled.png";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { auth } from "../App";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
 export function Logo() {
   return (
     <>
@@ -23,6 +24,7 @@ export default function Login() {
   var emailRef = useRef(null);
   var passwordRef = useRef(null);
   var navigate = useNavigate();
+  const [alert, setAlert] = useState(null);
 
   async function submit() {
     var email = emailRef.current.value;
@@ -31,15 +33,24 @@ export default function Login() {
     try {
       var user = await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
-      alert("Đăng nhập thành công\nChào mừng " + user.user.email);
     } catch (_) {
-      alert("Không tồn tại tài khoản trong hệ thống. Vui lòng đăng ký.");
+      setAlert({ content: "Tài khoản không tồn tại" });
+      setTimeout(() => {
+        setAlert(null);
+      }, 3000);
     }
   }
 
   return (
     <>
       <body class="bg-white">
+        {alert != null ? (
+          <div className="fixed right-0 m-8">
+            <Alert severity="error">{alert.content}</Alert>
+          </div>
+        ) : (
+          <></>
+        )}
         <div class="flex min-h-screen">
           <div class="flex flex-row w-full">
             <div class="hidden lg:flex flex-col justify-between bg-purple-500 lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-lg">

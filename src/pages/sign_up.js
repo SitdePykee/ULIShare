@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import logo from "../assets/Untitled.png";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../App";
 import { useNavigate } from "react-router";
+import { Alert } from "@mui/material";
 export function Logo() {
   return (
     <>
@@ -20,6 +21,7 @@ export function Logo() {
 }
 
 export default function Sign_up() {
+  const [alert, setAlert] = useState(null);
   var emailRef = useRef(null);
   var passwordRef = useRef(null);
   var repasswordRef = useRef(null);
@@ -31,7 +33,10 @@ export default function Sign_up() {
     var repassword = repasswordRef.current.value;
 
     if (password != repassword) {
-      alert("Mật khẩu không khớp");
+      setAlert({ content: "Mật khẩu không khớp, vui lòng nhập lại" });
+      setTimeout(() => {
+        setAlert(null);
+      }, 3000);
       return;
     }
 
@@ -39,13 +44,25 @@ export default function Sign_up() {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate("/finish_sign_up");
     } catch (_) {
-      alert("Tài khoản đã tồn tại hoặc sai cú pháp.");
+      setAlert({
+        content: "Tài khoản đã tồn tại hoặc mật khẩu chưa đúng định dạng",
+      });
+      setTimeout(() => {
+        setAlert(null);
+      }, 3000);
     }
   }
 
   return (
     <>
       <body class="bg-white">
+        {alert != null ? (
+          <div className="fixed right-0 m-8">
+            <Alert severity="error">{alert.content}</Alert>
+          </div>
+        ) : (
+          <></>
+        )}
         <div class="flex min-h-screen">
           <div class="flex flex-row w-full">
             <div class="hidden lg:flex flex-col justify-between bg-purple-500 lg:p-8 xl:p-12 lg:max-w-sm xl:max-w-lg">
