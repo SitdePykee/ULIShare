@@ -1,13 +1,12 @@
-import { CloudUpload, Logout, Star, UploadFile } from "@mui/icons-material";
+import { Logout, Star, UploadFile } from "@mui/icons-material";
 import { yellow } from "@mui/material/colors";
 import Sidebar from "./sidebar";
 import { Content, Header } from "./main";
 import { useState } from "react";
-import { Button, Rating } from "@mui/material";
+import { Rating } from "@mui/material";
 import RadioGroupRating from "./rating";
 import { useParams } from "react-router-dom";
 import { auth } from "../App";
-import styled from "@emotion/styled";
 
 export default function User() {
   const [value, setValue] = useState(0);
@@ -15,17 +14,7 @@ export default function User() {
   let { id } = useParams();
   var isCurrentUserPage =
     auth.currentUser != null && id == auth.currentUser.uid;
-  const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-  });
+
   return (
     <>
       <div className="h-full">
@@ -46,16 +35,11 @@ export default function User() {
             </div>
           </div>
           <div className="ml-auto mr-11">
-            {!isCurrentUserPage ? (
-              <Button
-                component="label"
-                variant="contained"
-                startIcon={<CloudUpload />}
-                sx={{ backgroundColor: "black", borderRadius: "50px" }}
-              >
-                Upload file
-                <VisuallyHiddenInput type="file" />
-              </Button>
+            {isCurrentUserPage ? (
+              <button className="px-4 py-2 bg-black text-white rounded block sm:flex space-x-2">
+                <UploadFile />
+                <div>Đăng tài liệu</div>
+              </button>
             ) : (
               <>
                 <p component="legend" className="text-white text-lg">

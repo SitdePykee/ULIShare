@@ -48,6 +48,7 @@ export default function App() {
                 <Routes>
                   <Route index element={Main()} />
                   <Route path="user/:id" element={User()} />
+                  <Route path="upload" />
                 </Routes>
               </div>
             </div>
