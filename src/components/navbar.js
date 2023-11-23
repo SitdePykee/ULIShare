@@ -20,7 +20,7 @@ export default function Navbar() {
         <div className="hidden lg:flex">
           <SearchBar />
         </div>
-        <div className="flex">
+        {/* <div className="flex">
           <NavItem
             icon={<FileDownloadDone sx={{ color: purple[800] }} />}
             text={'Tài liệu đã đăng'}
@@ -31,7 +31,7 @@ export default function Navbar() {
             text={'Tài liệu đã tải'}
             link={'#'}
           />
-        </div>
+        </div> */}
         {currentUser != null ? (
           <UserDropdown
             dropDownShown={dropDownShown}
@@ -87,6 +87,7 @@ export function Logo() {
 }
 
 export function UserDropdown({ dropDownShown, setDropDownShown }) {
+  var navigate = useNavigate();
   return (
     <>
       <div class={`xl:flex items-center`}>
@@ -101,7 +102,12 @@ export function UserDropdown({ dropDownShown, setDropDownShown }) {
                 dropDownShown ? '' : 'hidden'
               }`}
             >
-              <li class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-purple-700 focus:text-indigo-700 focus:outline-none">
+              <li
+                onClick={() => {
+                  navigate('/user/id=' + auth.currentUser.uid);
+                }}
+                class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-purple-700 focus:text-indigo-700 focus:outline-none"
+              >
                 <a
                   href=""
                   class="focus:underline focus:text-indigo-700 focus:outline-none flex items-center"
@@ -148,7 +154,13 @@ export function UserDropdown({ dropDownShown, setDropDownShown }) {
                   <span class="ml-2 font-medium">Hỗ trợ</span>
                 </a>
               </li>
-              <li class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-purple-700 flex items-center focus:text-indigo-700 focus:outline-none">
+              <li
+                onClick={() => {
+                  auth.signOut();
+                  window.location.href = '/';
+                }}
+                class="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-purple-700 flex items-center focus:text-indigo-700 focus:outline-none"
+              >
                 <a
                   href="javascript:void(0)"
                   class="focus:underline focus:text-indigo-700 focus:outline-none flex items-center"
@@ -168,7 +180,7 @@ export function UserDropdown({ dropDownShown, setDropDownShown }) {
                     <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
-                  <span class="ml-2 font-medium">Cài đặt tài khoản</span>
+                  <span class="ml-2 font-medium">Đăng xuất</span>
                 </a>
               </li>
             </ul>

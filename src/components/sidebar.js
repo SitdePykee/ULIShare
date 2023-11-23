@@ -5,15 +5,19 @@ import {
   Search,
   StarBorderOutlined,
   Upload,
-} from "@mui/icons-material";
-import { purple } from "@mui/material/colors";
-import { SearchBar } from "./navbar";
+} from '@mui/icons-material';
+import { purple } from '@mui/material/colors';
+import { SearchBar } from './navbar';
+import { useEffect, useState } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../App';
 
 export default function Sidebar() {
   return (
     <>
       <div className="bg-white my-2 h-fit pb-16 md:h-screen md:block shadow-xl px-3 shrink-0 w-full md:w-72 transition-transform duration-300 ease-in-out">
-        <Statistic />
+        {auth.currentUser != null ? <Statistic /> : <></>}
+
         <Category />
       </div>
     </>
@@ -21,6 +25,19 @@ export default function Sidebar() {
 }
 
 export function Statistic() {
+  const [stats, setStats] = useState(null);
+  if (auth.currentUser != null && stats == null) {
+    var docRef = doc(firestore, 'users', auth.currentUser.uid);
+    getDoc(docRef).then((data) => {
+      var map = data.data();
+      setStats({
+        upload: map.documents.length,
+        download: map.downloaded.length,
+        star: map.star,
+      });
+    });
+  }
+
   return (
     <>
       <div class="space-y-6 md:space-y-10 mt-10">
@@ -33,8 +50,8 @@ export function Statistic() {
                   sx={{ color: purple[800] }}
                 />
               }
-              text={"Đã đăng"}
-              quantity={"5"}
+              text={'Đã đăng'}
+              quantity={stats == null ? 0 : stats.upload}
             />
             <Criteria
               icon={
@@ -43,8 +60,8 @@ export function Statistic() {
                   sx={{ color: purple[800] }}
                 />
               }
-              text={"Đã tải"}
-              quantity={"5"}
+              text={'Đã tải'}
+              quantity={stats == null ? 0 : stats.download}
             />
             <Criteria
               icon={
@@ -53,8 +70,8 @@ export function Statistic() {
                   sx={{ color: purple[800] }}
                 />
               }
-              text={"Rating"}
-              quantity={"5"}
+              text={'Rating'}
+              quantity={stats == null ? 0 : stats.star}
             />
           </div>
         </div>
@@ -79,10 +96,10 @@ export function Category() {
   return (
     <>
       <div className="flex flex-col space-y-2">
-        <Link link={"#"} text={"Môn đại cương"} />
-        <Link link={"#"} text={"Môn chuyên ngành"} />
-        <Link link={"#"} text={"Ôn thi CDR NN1"} />
-        <Link link={"#"} text={"Ôn thi CDR NN2"} />
+        <Link link={'#'} text={'Môn đại cương'} />
+        <Link link={'#'} text={'Môn chuyên ngành'} />
+        <Link link={'#'} text={'Ôn thi CDR NN1'} />
+        <Link link={'#'} text={'Ôn thi CDR NN2'} />
       </div>
     </>
   );

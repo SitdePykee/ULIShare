@@ -1,9 +1,13 @@
-import logo from "../assets/Untitled.png";
-import { useRef, useState } from "react";
-import { auth } from "../App";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import { Alert } from "@mui/material";
+import logo from '../assets/Untitled.png';
+import { useRef, useState } from 'react';
+import { auth, firestore } from '../App';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { Alert } from '@mui/material';
+import { doc, getDoc } from 'firebase/firestore';
+
+export const currentUserData = {};
+
 export function Logo() {
   return (
     <>
@@ -32,9 +36,9 @@ export default function Login() {
 
     try {
       var user = await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      navigate('/');
     } catch (_) {
-      setAlert({ content: "Tài khoản không tồn tại" });
+      setAlert({ content: 'Tài khoản không tồn tại' });
       setTimeout(() => {
         setAlert(null);
       }, 3000);
@@ -63,7 +67,7 @@ export default function Login() {
                 </h1>
                 <p class="text-lg">Bạn chưa có tài khoản?</p>
                 <button
-                  onClick={() => navigate("/signup")}
+                  onClick={() => navigate('/signup')}
                   class="inline-block flex-none px-4 py-3 borders-2 rounded-lg font-medium border-black bg-black text-white"
                 >
                   Tạo tài khoản tại đây
@@ -98,7 +102,7 @@ export default function Login() {
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
                   <input
-                    type="text"
+                    type="password"
                     ref={passwordRef}
                     placeholder="Password"
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
@@ -111,7 +115,7 @@ export default function Login() {
                   </button>
                   <div class="flex justify-center items-center">
                     <span class="w-full border border-black"></span>
-                    <span class="px-4">Or</span>
+                    <span class="px-4">hoặc</span>
                     <span class="w-full border border-black"></span>
                   </div>
                   <button class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black relative">

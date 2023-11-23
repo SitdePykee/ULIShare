@@ -1,19 +1,27 @@
-import { Logout, Star, UploadFile } from "@mui/icons-material";
-import { yellow } from "@mui/material/colors";
-import Sidebar from "./sidebar";
-import { Content, Header } from "./main";
-import { useState } from "react";
-import { Rating } from "@mui/material";
-import RadioGroupRating from "./rating";
-import { useParams } from "react-router-dom";
-import { auth } from "../App";
+import { Star, UploadFile } from '@mui/icons-material';
+import { Content, Header } from './main';
+import { useEffect, useState } from 'react';
+import RadioGroupRating from './rating';
+import { useNavigate, useParams } from 'react-router-dom';
+import { auth, firestore } from '../App';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function User() {
   const [value, setValue] = useState(0);
+  const [userData, setUserData] = useState(null);
 
-  let { id } = useParams();
+  var navigate = useNavigate();
+
+  var { id } = useParams();
+  id = id.split('=')[1];
   var isCurrentUserPage =
     auth.currentUser != null && id == auth.currentUser.uid;
+  if (userData == null && id != null) {
+    var colRef = doc(firestore, 'users', id);
+    getDoc(colRef).then((data) => {
+      setUserData(data.data());
+    });
+  }
 
   return (
     <>
@@ -24,19 +32,31 @@ export default function User() {
             backgroundImage: `url("https://static.vecteezy.com/system/resources/previews/004/257/968/non_2x/abstract-purple-fluid-wave-background-free-vector.jpg")`,
           }}
         >
-          <div className="mx-16 rounded-full w-32 h-32 bg-white" />
+          <div
+            className="mx-16 rounded-full w-32 h-32 bg-white"
+            style={{
+              backgroundImage: `url("https://tuk-cdn.s3.amazonaws.com/assets/components/boxed_layout/bl_1.png")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover',
+            }}
+          />
           <div className="block space-y-3">
             <div className="font-semibold text-3xl text-white">
-              Phạm Văn Ngủ
+              {userData == null ? 'Loading' : userData.name}
             </div>
             <div className="flex items-center space-x-3">
               <Star fontSize="large" className="text-yellow-500" />
-              <div className="text-xl text-white">1.0</div>
+              <div className="text-xl text-white">
+                {userData == null ? 1 : userData.star}
+              </div>
             </div>
           </div>
           <div className="ml-auto mr-11">
             {isCurrentUserPage ? (
-              <button className="px-4 py-2 bg-black text-white rounded block sm:flex space-x-2">
+              <button
+                onClick={() => navigate('/upload')}
+                className="px-4 py-2 bg-black text-white rounded block sm:flex space-x-2"
+              >
                 <UploadFile />
                 <div>Đăng tài liệu</div>
               </button>
@@ -52,8 +72,18 @@ export default function User() {
         </div>
 
         <div className="block max-w-full overflow-hidden mx-9 my-9">
-          <Header text={"Tài liệu của tôi"} />
-          <Content />
+          <Header text={'Tài liệu của tôi'} />
+          {userData != null && userData.documents.length > 0 ? (
+            <Content ids={userData.documents} />
+          ) : (
+            <div className="mx-9 my-9">Chưa có</div>
+          )}
+          <Header text={'Tài liệu đã tải'} />
+          {userData != null && userData.downloaded.length > 0 ? (
+            <Content ids={userData.downloaded} />
+          ) : (
+            <div className="mx-9 my-9">Chưa có</div>
+          )}
         </div>
       </div>
     </>

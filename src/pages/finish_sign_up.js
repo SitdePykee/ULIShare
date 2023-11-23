@@ -1,12 +1,8 @@
-import { useRef } from "react";
-import logo from "../assets/Untitled.png";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../App";
-import { useNavigate } from "react-router";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { university } from "../university";
-import { Autocomplete, TextField } from "@mui/material";
+import logo from '../assets/Untitled.png';
+import { useNavigate } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { university } from '../university';
+import { Autocomplete, TextField } from '@mui/material';
 export function Logo() {
   return (
     <>
@@ -90,7 +86,7 @@ export default function Finish_sign_up() {
                   />
                   <Tag_selector />
                   <button
-                    onClick={() => navigate("/signin")}
+                    onClick={() => navigate('/signin')}
                     class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white"
                   >
                     Đăng kí
