@@ -65,7 +65,11 @@ export default function User() {
                 <p component="legend" className="text-white text-lg">
                   Đánh giá độ tích cực
                 </p>
-                <RadioGroupRating />
+                <RadioGroupRating
+                  uid={id}
+                  data={userData}
+                  rating={userData != null ? userData.star : 5}
+                />
               </>
             )}
           </div>

@@ -1,7 +1,7 @@
 import { Download, FileDownloadDone, Search } from '@mui/icons-material';
 import logo from '../assets/Untitled.png';
 import { purple } from '@mui/material/colors';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { auth } from '../App';
 import { Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -20,18 +20,7 @@ export default function Navbar() {
         <div className="hidden lg:flex">
           <SearchBar />
         </div>
-        {/* <div className="flex">
-          <NavItem
-            icon={<FileDownloadDone sx={{ color: purple[800] }} />}
-            text={'Tài liệu đã đăng'}
-            link={'#'}
-          />
-          <NavItem
-            icon={<Download sx={{ color: purple[800] }} />}
-            text={'Tài liệu đã tải'}
-            link={'#'}
-          />
-        </div> */}
+
         {currentUser != null ? (
           <UserDropdown
             dropDownShown={dropDownShown}
@@ -52,19 +41,38 @@ export default function Navbar() {
 }
 
 export function SearchBar() {
+  var ref = useRef();
+  const handleSearch = () => {
+    var text = ref.current.value;
+    window.location.href = '/search?search=' + text;
+  };
+
   return (
     <>
       <div className=" items-center rounded-3xl transition-all ease duration-500 hover:bg-purple-400 border-2 border-black whitespace-nowrap">
         <input
+          ref={ref}
           style={{ width: '40vw' }}
           className="px-4 py-2 rounded-3xl flex-grow focus:outline-none text-black"
           placeholder="Tìm kiếm tài liệu..."
+          onKeyDown={(e) => {
+            if (e.key == 'Enter') {
+              handleSearch();
+            }
+          }}
         ></input>
-        <Search
-          fontSize="medium"
-          style={{ margin: '0 15px 0 15px' }}
-          className="text-black hover:text-white cursor-pointer"
-        />
+        <div
+          className="inline"
+          onClick={() => {
+            handleSearch();
+          }}
+        >
+          <Search
+            fontSize="medium"
+            style={{ margin: '0 15px 0 15px' }}
+            className="text-black hover:text-white cursor-pointer"
+          />
+        </div>
       </div>
     </>
   );
@@ -73,7 +81,12 @@ export function SearchBar() {
 export function Logo() {
   return (
     <>
-      <div class="flex items-center">
+      <div
+        class="flex items-center cursor-pointer"
+        onClick={() => {
+          window.location.href = '/';
+        }}
+      >
         <img src={logo} className="w-1/5" />
         <p
           tabindex="0"

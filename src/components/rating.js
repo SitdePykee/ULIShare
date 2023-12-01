@@ -7,6 +7,8 @@ import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAltOutlined';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, firestore } from '../App';
 
 const StyledRating = styled(Rating)(({ theme }) => ({
   '& .MuiRating-iconEmpty .MuiSvgIcon-root': {
@@ -46,13 +48,26 @@ IconContainer.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-export default function RadioGroupRating() {
+export default function RadioGroupRating({ uid, data, rating }) {
   return (
     <StyledRating
       name="highlight-selected-only"
-      defaultValue={2}
+      defaultValue={rating}
       IconContainerComponent={IconContainer}
       getLabelText={(value) => customIcons[value].label}
+      onChange={(event, newValue) => {
+        if (auth.currentUser == null) {
+          alert('Bạn phải đăng nhập để thực hiện chức năng này');
+          return;
+        }
+        data.star = Math.round((data.star + newValue) / 2);
+        setDoc(
+          doc(firestore, 'users', uid),
+          { star: data.star },
+          { merge: true }
+        );
+        alert('Bạn đã đánh giá thành công');
+      }}
       highlightSelectedOnly
     />
   );

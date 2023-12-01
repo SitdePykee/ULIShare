@@ -1,24 +1,27 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../App';
-import DocViewer from 'react-doc-viewer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export default function DocumentViewer() {
-  const [document, setDocument] = useState(null);
-
-  // const queryParameters = new URLSearchParams(window.location.search);
-  // var id = queryParameters.get('docid');
+  var [document, setDocument] = useState(null);
   let { docid } = useParams();
   var id = docid.split('=')[1];
-  if (id == null) return;
 
-  if (document == null) {
+  useEffect(() => {
+    if (id == null || document !== null) {
+      return;
+    }
+
     var docRef = doc(firestore, 'documents', id);
     getDoc(docRef).then((data) => {
-      setDocument(data.data().ref);
+      var d = data.data();
+      setDocument(d);
     });
-  }
+  }, [id, document]);
 
-  return <DocViewer documents={[document]} />;
+  if (id == null || document == null) {
+    return null;
+  }
+  return <iframe src={document.ref} className="w-full h-screen" />;
 }

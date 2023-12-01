@@ -96,10 +96,10 @@ export function Category() {
   return (
     <>
       <div className="flex flex-col space-y-2">
-        <Link link={'#'} text={'Môn đại cương'} />
-        <Link link={'#'} text={'Môn chuyên ngành'} />
-        <Link link={'#'} text={'Ôn thi CDR NN1'} />
-        <Link link={'#'} text={'Ôn thi CDR NN2'} />
+        <Link link={'/?category=daicuong'} text={'Môn đại cương'} />
+        <Link link={'/?category=chuyennganh'} text={'Môn chuyên ngành'} />
+        <Link link={'/?category=cdrnn1'} text={'Ôn thi CDR NN1'} />
+        <Link link={'/?category=cdrnn2'} text={'Ôn thi CDR NN2'} />
       </div>
     </>
   );

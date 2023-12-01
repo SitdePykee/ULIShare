@@ -13,18 +13,15 @@ import { colors } from '@mui/material';
 import { blue, green, orange, red, yellow } from '@mui/material/colors';
 import { doc, getDoc } from 'firebase/firestore';
 import React, { useRef, useState } from 'react';
-import { firestore } from '../App';
+import { auth, firestore } from '../App';
 import { useNavigate } from 'react-router-dom';
 import { Title } from './document_sidebar';
+import WelcomeNotLogin, { Welcome } from './home/welcome_panel';
 export default function Main() {
   return (
     <>
       <div className="mx-9 my-9 flex justify-center items-center">
-        <Title
-          title={'Chào mừng bạn đến với nền tảng chia sẻ tài liệu ULIShare'}
-        />
-        {/* <Header text={'Tài liệu của bạn'} />
-        <Content ids={[]} /> */}
+        {auth.currentUser == null ? <WelcomeNotLogin /> : <Welcome />}
       </div>
     </>
   );

@@ -2,24 +2,23 @@ import {
   AccountCircle,
   CloudDownload,
   Comment,
-  Face,
   Favorite,
-  SentimentDissatisfied,
   Star,
-  VerifiedUser,
 } from '@mui/icons-material';
-import { blue, red, yellow } from '@mui/material/colors';
-import { upload } from '@testing-library/user-event/dist/upload';
-import { doc, getDoc } from 'firebase/firestore';
-import { useState } from 'react';
-import { firestore } from '../App';
+import { blue, red } from '@mui/material/colors';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useRef, useState } from 'react';
+import { auth, firestore } from '../App';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Rating } from '@mui/material';
+import moment from 'moment';
 
 export default function Document_Sidebar({ title }) {
   const [document, setDocument] = useState(null);
   const [uploader, setUploader] = useState(null);
 
   var navigate = useNavigate();
+  var commentRef = useRef();
 
   let { docid } = useParams();
   var id = docid.split('=')[1];
@@ -30,7 +29,9 @@ export default function Document_Sidebar({ title }) {
       setDocument(data.data());
 
       getDoc(doc(firestore, 'users', data.data().user_id)).then((D) => {
-        setUploader(D.data());
+        var _ = D.data();
+        _.id = data.data().user_id;
+        setUploader(_);
       });
     });
   }
@@ -39,11 +40,49 @@ export default function Document_Sidebar({ title }) {
     <>
       <div className="bg-white my-2 h-full md:block shadow-xl shrink-0 w-full md:w-72 transition-transform duration-300 ease-in-out ">
         <div className="space-y-10 p-5 pt-9">
-          <Title title={document != null ? document.name : ''} />
+          <div className="w-auto flex flex-col justify-center self-center">
+            <Title title={document != null ? document.name : ''} />
+
+            <Rating
+              name="half-rating"
+              className="self-center w-fit"
+              value={document == null ? 5 : document.rating}
+              onChange={(event, newValue) => {
+                if (auth.currentUser == null) {
+                  alert('Bạn phải đăng nhập để thực hiện chức năng này');
+                  return;
+                }
+                if (auth.currentUser.uid == uploader.id) {
+                  alert('Bạn không thể tự đánh giá tài liệu của mình');
+                  return;
+                }
+                document.rating =
+                  document.rating == 0
+                    ? newValue
+                    : (document.rating + newValue) / 2;
+                setDoc(
+                  doc(firestore, 'documents', id),
+                  { rating: document.rating },
+                  { merge: true }
+                );
+                alert('Bạn đã đánh giá thành công');
+                setDocument(document);
+              }}
+              precision={0.5}
+            />
+          </div>
+          <p className=" text-center">
+            {document != null ? document.type : ''}
+          </p>
           <div className="block space-y-3">
             <div className="flex">
               <div className="font-semibold">Người đăng: </div>
-              <a className="text-purple-600 ml-2">
+              <a
+                className="text-purple-600 ml-2 cursor-pointer"
+                onClick={() => {
+                  navigate('/user/id=' + uploader.id);
+                }}
+              >
                 {uploader != null ? uploader.name : ''}
               </a>
             </div>
@@ -57,15 +96,21 @@ export default function Document_Sidebar({ title }) {
           <div className="flex items-center justify-evenly mt-10 w-full">
             <button className="mr-3 flex items-center hover:scale-150 transform transition-transform duration-300">
               <Favorite sx={{ color: red[600] }} />
-              <span className="ml-1">4</span>
-            </button>
-            <button className="mr-3 flex items-center hover:scale-150 transform transition-transform duration-300">
-              <SentimentDissatisfied sx={{ color: yellow[700] }} />
-              <span className="ml-1">99</span>
+              <span className="ml-1">
+                {document != null && document.reaction != null
+                  ? document.reaction.heart
+                  : 0}
+              </span>
             </button>
             <button className="flex items-center hover:scale-150 transform transition-transform duration-300">
               <Comment sx={{ color: blue[700] }} />
-              <span className="ml-1">2</span>
+              <span className="ml-1">
+                {document != null
+                  ? document.comment
+                    ? Object.keys(document.comment).length
+                    : 0
+                  : 0}
+              </span>
             </button>
           </div>
           <div
@@ -80,9 +125,72 @@ export default function Document_Sidebar({ title }) {
             </button>
           </div>
         </div>
-        {/* <div>
-          <Comment_Session />
-        </div> */}
+        <div className="flex w-full">
+          <div class="w-full flex items-center justify-center mt-5 mb-4">
+            <div class="w-full max-w-xl bg-white rounded-lg pt-2">
+              <div class="w-full md:w-full px-3 mb-2 mt-2">
+                <input
+                  ref={commentRef}
+                  class="bg-gray-100 w-full rounded border border-gray-400 leading-normal resize-none py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
+                  name="body"
+                  placeholder="Nhập bình luận"
+                  required
+                ></input>
+              </div>
+              <div class="w-full md:w-full flex items-center justify-end">
+                <div class="mr-1">
+                  <button
+                    onClick={() => {
+                      var cmt = commentRef.current.value;
+                      if (cmt == null || cmt == undefined || cmt.length == 0) {
+                        alert('Vui lòng nhập bình luận');
+                        return;
+                      }
+
+                      if (!document.comment) {
+                        document.comment = {
+                          [auth.currentUser.uid +
+                          '_br_' +
+                          moment().locale('en').format('HHmmssddMMyyyy')]: cmt,
+                        };
+                      } else {
+                        document.comment[
+                          auth.currentUser.uid +
+                            '_br_' +
+                            moment().locale('en').format('HHmmssddMMyyyy')
+                        ] = cmt;
+                      }
+
+                      setDoc(
+                        doc(firestore, 'documents', id),
+                        { comment: document.comment },
+                        {
+                          merge: true,
+                        }
+                      );
+                      alert('Đã đăng tải bình luận');
+                      window.location.reload();
+                    }}
+                    class="bg-white mb-5 text-gray-700 font-medium py-1 px-2 border border-gray-400 rounded-3xl tracking-wide mr-1 hover:bg-purple-200"
+                  >
+                    Đăng tải
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          {document != null ? (
+            document.comment ? (
+              <Comment_Session comments={document.comment} />
+            ) : (
+              <></>
+            )
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </>
   );
@@ -96,53 +204,34 @@ export function Title({ title }) {
   );
 }
 
-export function Comment_Session() {
+export function Comment_Session({ comments }) {
   return (
     <>
-      <div class="flex items-center justify-center mt-5 mb-4">
-        <form class="w-full max-w-xl bg-white rounded-lg pt-2">
-          <div class="w-full md:w-full px-3 mb-2 mt-2">
-            <textarea
-              class="bg-gray-100 w-full rounded border border-gray-400 leading-normal resize-none py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
-              name="body"
-              placeholder="Type Your Comment"
-              required
-            ></textarea>
-          </div>
-          <div class="w-full md:w-full flex items-start justify-end">
-            <div class="mr-1">
-              <input
-                type="submit"
-                class="bg-white mb-5 text-gray-700 font-medium py-1 px-2 border border-gray-400 rounded-3xl tracking-wide mr-1 hover:bg-purple-200"
-                value="Post Comment"
-              />
-            </div>
-          </div>
-        </form>
-      </div>
       <div className="flex-col justify-center items-center w-full">
-        <UserComment
-          userName={'Linh gà vl'}
-          userStar={'1.0'}
-          text={'Gà chưa'}
-        />
-        <UserComment
-          userName={'Linh gà số 1'}
-          userStar={'4.0'}
-          text={'Chúng tôi tin rằng uy tín là phương châm hàng đầu'}
-        />
-        <UserComment
-          userName={'Táo ngố'}
-          userStar={'5.0'}
-          text={'Tự hào là công ty trò chơi trực tuyến số 1 châu Á'}
-          type={'self'}
-        />
+        {Object.entries(comments)
+          .reverse()
+          .map(([key, value]) => {
+            return (
+              <UserComment
+                id={key.split('_br_')[0]}
+                time={key.split('_br_')[1]}
+                text={value}
+              />
+            );
+          })}
       </div>
     </>
   );
 }
-function UserComment({ userName, userStar, text, type }) {
+function UserComment({ id, time, text, type }) {
   const commentType = type || 'default';
+
+  const [user, setUser] = useState(null);
+  if (user == null) {
+    getDoc(doc(firestore, 'users', id)).then((data) => {
+      setUser(data.data());
+    });
+  }
 
   // Trả về hàm JSX
   return (
@@ -165,14 +254,15 @@ function UserComment({ userName, userStar, text, type }) {
           <div
             className={`ml-2 ${commentType === 'self' ? 'mr-2' : ''} font-bold`}
           >
-            {userName}
-          </div>
-          <div className="ml-2 flex">
-            <Star className="text-yellow-500" />
-            <div className="ml-1">{userStar}</div>
+            {user != null ? user.name : ''}
           </div>
         </div>
       </div>
+      <p className={`ml-${commentType === 'self' ? 'auto' : '5'}`}>
+        {moment(time, 'HHmmssddMMyyyy')
+          .locale('en')
+          .format('HH:mm:ss dd/MM/yyyy')}
+      </p>
       <span
         className={`ml-${commentType === 'self' ? 'auto' : '5'} ${
           commentType === 'self'

@@ -52,11 +52,6 @@ export default function UploadPage() {
         documents: _d.documents,
       });
 
-      _d.documents.push(`${idCount + 1}`);
-      await updateDoc(doc(firestore, 'users', auth.currentUser.uid), {
-        documents: _d.documents,
-      });
-
       alert('Đăng tải tài liệu thành công');
       window.location.href = '/user/id=' + auth.currentUser.uid;
     });
@@ -118,6 +113,7 @@ export default function UploadPage() {
                     const file = e.target.files[0];
                     setSelectedFile(file);
                   }}
+                  accept=".pdf"
                 />
                 {selectedFile == null ? (
                   <label

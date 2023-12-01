@@ -1,8 +1,10 @@
 import logo from '../assets/Untitled.png';
 import { useNavigate } from 'react-router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { university } from '../university';
 import { Autocomplete, TextField } from '@mui/material';
+import { auth, firestore } from '../App';
+import { doc, setDoc } from 'firebase/firestore';
 export function Logo() {
   return (
     <>
@@ -21,6 +23,27 @@ export function Logo() {
 
 export default function Finish_sign_up() {
   var navigate = useNavigate();
+
+  var nameRef = useRef(null);
+  var phoneRef = useRef(null);
+
+  const [school, setSchool] = useState(null);
+  const [birthdate, setBirthdate] = useState(null);
+
+  const handleFinish = async () => {
+    var name = nameRef.current.value;
+    var phone = phoneRef.current.value;
+
+    const ref = doc(firestore, 'users', auth.currentUser.uid);
+    await setDoc(
+      ref,
+      { name: name, phone: phone, birthdate: birthdate, school: school },
+      { merge: true }
+    );
+
+    alert('Đăng ký tài khoản thành công. Bây giờ bạn có thể đăng nhập.');
+    navigate('/signin');
+  };
 
   return (
     <>
@@ -64,6 +87,7 @@ export default function Finish_sign_up() {
                     Tên của bạn:
                   </div>
                   <input
+                    ref={nameRef}
                     type="text"
                     placeholder="Nhập tên của bạn"
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
@@ -72,6 +96,7 @@ export default function Finish_sign_up() {
                     Số điện thoại của bạn:
                   </div>
                   <input
+                    ref={phoneRef}
                     type="text"
                     placeholder="Số điện thoại"
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
@@ -81,12 +106,16 @@ export default function Finish_sign_up() {
                   </div>
                   <input
                     type="date"
-                    placeholder="Số điện thoại"
+                    onChange={(e) => setBirthdate(e.target.value)}
                     class="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal"
                   />
-                  <Tag_selector />
+                  <Tag_selector
+                    setSchool={(e, value) => {
+                      setSchool(value);
+                    }}
+                  />
                   <button
-                    onClick={() => navigate('/signin')}
+                    onClick={() => handleFinish()}
                     class="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white"
                   >
                     Đăng kí
@@ -101,7 +130,7 @@ export default function Finish_sign_up() {
   );
 }
 
-export function Tag_selector() {
+export function Tag_selector({ setSchool }) {
   var tags = JSON.parse(university);
 
   return (
@@ -116,6 +145,7 @@ export function Tag_selector() {
         id="tagSelect"
         className="w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         options={JSON.parse(university)}
+        onChange={setSchool}
         renderInput={(params) => <TextField {...params} />}
       />
     </div>

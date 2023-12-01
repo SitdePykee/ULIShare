@@ -8,13 +8,20 @@ import Login from './pages/login';
 import Sign_up from './pages/sign_up';
 
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import {
+  browserLocalPersistence,
+  initializeAuth,
+  onAuthStateChanged,
+} from 'firebase/auth';
 import Finish_sign_up from './pages/finish_sign_up';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import UploadPage from './components/upload';
 import DocumentViewer from './components/document_viewer';
 import { Upload } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import RequireAuth from './components/require_auth';
+import SearchResult from './components/search_result';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDK1D_WaS5rVF2jWCzm_sw6wfd7KrLpHDY',
@@ -27,11 +34,23 @@ const firebaseConfig = {
 };
 
 export const app = initializeApp(firebaseConfig);
-export const auth = getAuth();
+export const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence,
+});
 export const firestore = getFirestore(app);
 export const storage = getStorage(app);
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []); //
+
   return (
     <Routes>
       <Route path="/signin" element={Login()} />
@@ -48,12 +67,16 @@ export default function App() {
                 <Route path="*" element={<Sidebar />} />
               </Routes>
 
-              <div className="max-w-full overflow-hidden flex-1 p-5">
-                <div className="max-w-full flex-1 overflow-hidden">
+              <div className="max-w-full overflow-x-hidden flex-1 p-5">
+                <div className="max-w-full flex-1 overflow-x-hidden">
                   <Routes>
-                    <Route index element={Main()} />
+                    <Route index element={<Main />} />
                     <Route path="user/:id" element={<User />} />
-                    <Route path="upload" element={<UploadPage />} />
+                    <Route path="search" element={<SearchResult />} />
+                    <Route
+                      path="upload"
+                      element={<RequireAuth component={<UploadPage />} />}
+                    />
                     <Route
                       path="document/:docid"
                       element={<DocumentViewer />}
